@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#14102B">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>Kaizen Daily</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;800&family=Figtree:wght@400;500;700&display=swap">
+<style>
+/* Layout: one-column phone app, sticky header, cards stacked, tab bar fixed to bottom. Single committed dark "night-to-sunrise" look. */
+:root{
+  --bg:#14102B; --panel:#1F1940; --panel2:#2A2254; --line:#3A3070;
+  --ink:#FFFFFF; --muted:#B7AEDB; --dark:#14102B;
+  --wake:#FF5A36; --web:#2EA8FF; --code:#FF2E93; --speak:#C6F432; --gold:#FFC72C;
+  --display:"Unbounded","Arial Black",system-ui,sans-serif;
+  --body:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.45;-webkit-tap-highlight-color:transparent}
+.app{max-width:520px;margin:0 auto;padding-inline:16px;padding-block:0 110px}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding-block:14px 10px;display:flex;align-items:center;gap:14px}
+.ring{width:62px;height:62px;flex:none;position:relative}
+.ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ring b{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--display);font-size:17px}
+.hd{min-width:0}
+.hd h1{font-family:var(--display);font-weight:800;font-size:22px;margin:0;letter-spacing:-.01em}
+.hd p{margin:2px 0 0;color:var(--muted);font-size:13px}
+.phase{display:inline-block;background:var(--gold);color:var(--dark);font-weight:700;font-size:11px;letter-spacing:.06em;text-transform:uppercase;border-radius:999px;padding:2px 9px;margin-top:4px}
+.view{display:flex;flex-direction:column;gap:14px;padding-top:6px}
+.banner{border-radius:16px;padding:14px 16px;background:var(--wake);color:var(--dark);font-weight:700}
+.banner small{display:block;font-weight:500}
+.card{background:var(--panel);border-radius:20px;padding:16px;display:flex;flex-direction:column;gap:12px;border:2px solid transparent}
+.card.done{border-color:var(--c)}
+.top{display:flex;align-items:center;gap:12px}
+.dot{width:44px;height:44px;border-radius:14px;background:var(--c);color:var(--dark);display:grid;place-items:center;font-family:var(--display);font-size:18px;flex:none}
+.top h2{margin:0;font-family:var(--display);font-size:16px;font-weight:600}
+.top .meta{color:var(--muted);font-size:13px}
+.streak{margin-left:auto;text-align:right;font-family:var(--display);font-size:20px;color:var(--c);font-variant-numeric:tabular-nums}
+.streak span{display:block;font-family:var(--body);font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.focus{background:var(--panel2);border-radius:12px;padding:10px 12px;font-size:14px}
+.focus em{font-style:normal;color:var(--c);font-weight:700;font-size:11px;letter-spacing:.06em;text-transform:uppercase;display:block}
+.btns{display:flex;gap:8px;flex-wrap:wrap}
+button{font:inherit;cursor:pointer;border:0}
+.b{flex:1 1 120px;min-height:48px;border-radius:14px;font-weight:700;padding:10px 12px;background:var(--panel2);color:var(--ink);border:2px solid var(--c)}
+.b.solid{background:var(--c);color:var(--dark)}
+.b.on{background:var(--c);color:var(--dark)}
+.b:focus-visible,.tab:focus-visible,.step:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.timer{font-family:var(--display);font-size:34px;text-align:center;color:var(--c);font-variant-numeric:tabular-nums}
+.ladder{display:flex;flex-direction:column;gap:6px}
+.step{display:flex;align-items:center;gap:10px;text-align:left;background:var(--panel2);color:var(--ink);border-radius:12px;padding:10px 12px;min-height:46px}
+.step i{width:26px;height:26px;border-radius:8px;border:2px solid var(--c);flex:none;display:grid;place-items:center;font-style:normal;font-weight:800;color:var(--dark)}
+.step.on i{background:var(--c)}
+.step.on{color:var(--muted);text-decoration:line-through}
+textarea{width:100%;min-height:70px;background:var(--panel2);color:var(--ink);border:2px solid var(--line);border-radius:12px;padding:10px;font:inherit;resize:vertical}
+textarea:focus{outline:none;border-color:var(--gold)}
+.lbl{font-family:var(--display);font-size:14px;margin:0}
+.sub{color:var(--muted);font-size:13px;margin:0}
+.grid{display:grid;grid-template-columns:28px repeat(7,1fr);gap:5px;font-size:11px;color:var(--muted)}
+.grid .c{aspect-ratio:1;border-radius:6px;background:var(--panel2);max-width:100%}
+.grid .c.today{outline:2px solid var(--gold)}
+.grid .c.fut{background:transparent;border:1px dashed var(--line)}
+.legend{display:flex;gap:6px;align-items:center;font-size:12px;color:var(--muted)}
+.legend .c{width:16px;height:16px;border-radius:4px}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stat{background:var(--panel);border-radius:16px;padding:14px;border-top:5px solid var(--c)}
+.stat b{font-family:var(--display);font-size:26px;display:block;font-variant-numeric:tabular-nums}
+.stat span{color:var(--muted);font-size:13px}
+.tip{background:var(--panel);border-radius:16px;padding:14px;border-left:6px solid var(--c);border-radius:0 16px 16px 0}
+.tip b{color:var(--c)}
+.wk{background:var(--panel);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:8px}
+.wk.now{border:2px solid var(--gold)}
+.wk h3{margin:0;font-family:var(--display);font-size:14px}
+.wk p{margin:0;font-size:14px;display:flex;gap:8px}
+.wk p i{width:10px;height:10px;border-radius:3px;background:var(--c);flex:none;margin-top:6px}
+.notes p{margin:0;padding:10px 0;border-bottom:1px solid var(--line);font-size:14px}
+.notes p span{color:var(--muted);font-size:12px;display:block}
+nav{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--panel);border-top:1px solid var(--line);padding:8px 8px calc(8px + env(safe-area-inset-bottom,0px));display:flex;justify-content:center}
+nav .in{display:flex;gap:6px;max-width:520px;width:100%}
+.tab{flex:1;background:transparent;color:var(--muted);border-radius:12px;padding:10px 4px;font-weight:700;font-size:13px}
+.tab.on{background:var(--gold);color:var(--dark)}
+.save{font-size:11px;color:var(--muted);text-align:center}
+@media (prefers-reduced-motion:no-preference){.card,.b,.step{transition:background .2s,border-color .2s,transform .1s}.b:active{transform:scale(.97)}}
+</style>
+</head><body>
+
+<div class="app">
+  <header>
+    <div class="ring" aria-label="Tracks done today">
+      <svg viewBox="0 0 36 36"><circle cx="18" cy="18" r="15.5" fill="none" stroke="#2A2254" stroke-width="5"/><circle id="ringArc" cx="18" cy="18" r="15.5" fill="none" stroke="#FFC72C" stroke-width="5" stroke-linecap="round" stroke-dasharray="0 100" pathLength="100"/></svg>
+      <b id="ringTxt">0/4</b>
+    </div>
+    <div class="hd">
+      <h1 id="hTitle">Today</h1>
+      <p id="hDate"></p>
+      <span class="phase" id="hPhase"></span>
+    </div>
+  </header>
+  <main id="view" class="view"></main>
+  <p class="save" id="saveState"></p>
+</div>
+<nav><div class="in">
+  <button class="tab on" data-t="today" id="t-today">Today</button>
+  <button class="tab" data-t="chain" id="t-chain">Chain</button>
+  <button class="tab" data-t="plan" id="t-plan">Plan</button>
+  <button class="tab" data-t="review" id="t-review">Review</button>
+</div></nav>
+
+<script>
+const START = '2026-10-10', END = '2026-12-31';
+const TRACKS = [
+  {k:'wake', name:'Rise early', icon:'☀', c:'var(--wake)', full:'All 5 rise steps', tiny:null},
+  {k:'web', name:'Website', icon:'</>', c:'var(--web)', full:'25 min', mins:25, tiny:'2-min version: open the file, type one line'},
+  {k:'code', name:'Python / Java', icon:'{ }', c:'var(--code)', full:'20 min', mins:20, tiny:'2-min version: run yesterday\'s program, change one thing'},
+  {k:'speak', name:'Speaking', icon:'◉', c:'var(--speak)', full:'10 min', mins:10, tiny:'2-min version: record one clear sentence'}
+];
+const LADDER = ['Open eyes, 3 slow breaths','Stretch arms, sit up','Blanket off, feet on floor','Stand, light on, drink water','Walk out of the bedroom'];
+const FOCUS = {
+  wake:['Your usual time · max 3-min gap between steps','Your usual time · max 3-min gap','15 min earlier · 2-min gaps','15 min earlier · 2-min gaps','30 min earlier · 1-min gaps','30 min earlier · 1-min gaps','45 min earlier · 1-min gaps','45 min earlier · 1-min gaps','60 min earlier · one smooth flow','60 min earlier · one smooth flow','Hold the new time','Hold the new time'],
+  web:['Build an "About me" page with AI, read its explanation','Page skeleton (HTML): retype one section without looking','Paint (CSS): restyle one part by hand','Layout (CSS flexbox): 3 boxes side by side','Phone-friendly pages (responsive design)','Muscles (JavaScript): one button that changes something','JavaScript lists and repeats (arrays, loops): a to-do list','WordPress set-up on your laptop (Local WP)','WordPress: build one page a day','WordPress add-ons (plugins): contact form, gallery','Go live: hosting and web address (domain)','Polish and show 3 people'],
+  code:['Python: install, print, boxes (variables)','Python: kinds of information, user input · tip calculator','Python: choices (if/else) · guess-my-number','Python: repeating (loops) · times-table printer','Python: lists · shopping list','Python: mini-recipes (functions) · expense tracker','Python: saving to a file · habit tracker','Java: set-up, printing, boxes and their kinds','Java: choices and loops · guess-my-number again','Java: arrays and methods · expense totals','Java: blueprints (classes and objects) · a Habit class','Review: same idea in Python vs Java'],
+  speak:['Alone: mirror + recorder · skill: slow down','Alone: mirror + recorder · skill: slow down','One safe person: daily voice note · skill: pause on purpose','One safe person: daily voice note · skill: pause on purpose','One comment in a meeting · skill: Point–Reason–Example–Point','One comment in a meeting · skill: Point–Reason–Example–Point','Explain a project to 2–3 people · skill: voice variety','Explain a project to 2–3 people · skill: voice variety','Record a 5-min talk · skill: stand still, eye contact','Record a 5-min talk · skill: stand still, eye contact','Give the talk to a real group · strong open and close','Give the talk to a real group · strong open and close']
+};
+const PHASES = [[1,4,'Phase 1 · Foundation'],[5,8,'Phase 2 · Build'],[9,12,'Phase 3 · Show']];
+
+let S = {days:{}};
+let tab = 'today', timer = null, tick = null;
+
+const iso = d => { const z = new Date(d.getTime() - d.getTimezoneOffset()*60000); return z.toISOString().slice(0,10); };
+const addDays = (s,n) => { const d = new Date(s+'T12:00:00'); d.setDate(d.getDate()+n); return iso(d); };
+const today = () => iso(new Date());
+const dayIdx = s => Math.round((Date.parse(s+'T12:00:00') - Date.parse(START+'T12:00:00'))/864e5);
+const weekOf = s => Math.min(12, Math.max(1, Math.floor(dayIdx(s)/7)+1));
+const day = s => (S.days[s] ||= {wake:[false,false,false,false,false], web:0, code:0, speak:0, note:''});
+const peek = s => S.days[s];
+function level(s,k){ const d = S.days[s]; if(!d) return 0; if(k==='wake'){ const n = d.wake.filter(Boolean).length; return n===5?2:n>=3?1:0; } return d[k]||0; }
+function doneCount(s){ return TRACKS.filter(t => level(s,t.k)>0).length; }
+function streak(k){
+  let n = 0, miss = 0, s = today();
+  if(level(s,k)===0) s = addDays(s,-1);
+  while(dayIdx(s) >= 0){
+    if(level(s,k)>0){ n++; miss = 0; } else { miss++; if(miss>=2) break; }
+    s = addDays(s,-1);
+  }
+  return n;
+}
+function rescue(){
+  const y = addDays(today(),-1);
+  if(dayIdx(y) < 0) return [];
+  return TRACKS.filter(t => level(y,t.k)===0 && level(today(),t.k)===0);
+}
+
+/* storage: local cache first, then the private store */
+let saveT = null;
+function loadLocal(){ try{ const v = localStorage.getItem('kaizen-state'); if(v) S = JSON.parse(v); }catch(e){} }
+function save(){
+  try{ localStorage.setItem('kaizen-state', JSON.stringify(S)); }catch(e){}
+  clearTimeout(saveT);
+}
+function setSave(t){ document.getElementById('saveState').textContent = t; }
+function connect(){ setSave('Saved on this phone'); }
+
+/* rendering */
+const el = (h) => { const t = document.createElement('template'); t.innerHTML = h.trim(); return t.content; };
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+function header(){
+  const t = today(), w = weekOf(t), n = doneCount(t);
+  const ph = PHASES.find(p => w>=p[0] && w<=p[1]);
+  document.getElementById('hDate').textContent = new Date().toLocaleDateString(undefined,{weekday:'long', day:'numeric', month:'long'}) + ` · Week ${w} of 12`;
+  document.getElementById('hPhase').textContent = dayIdx(t) > dayIdx(END) ? 'Roadmap complete' : ph[2];
+  document.getElementById('ringArc').setAttribute('stroke-dasharray', `${n*25} 100`);
+  document.getElementById('ringTxt').textContent = `${n}/4`;
+  document.getElementById('hTitle').textContent = {today:'Today', chain:'Your chain', plan:'12-week plan', review:'Weekly review'}[tab];
+}
+
+function vToday(){
+  const t = today(), d = day(t), w = weekOf(t), r = rescue();
+  let h = '';
+  if(r.length) h += `<div class="banner">Rescue day: ${r.map(x=>x.name).join(', ')}<small>You missed yesterday. Never miss twice. The 2-minute version counts.</small></div>`;
+  for(const tr of TRACKS){
+    const lv = level(t, tr.k);
+    h += `<section class="card ${lv?'done':''}" style="--c:${tr.c}">
+      <div class="top"><div class="dot">${tr.icon}</div><div><h2>${tr.name}</h2><div class="meta">${lv===2?'Full step done':lv===1?'Tiny step done':'Not yet today'}</div></div>
+      <div class="streak">${streak(tr.k)}<span>day chain</span></div></div>
+      <div class="focus"><em>Week ${w} step</em>${esc(FOCUS[tr.k][w-1])}</div>`;
+    if(tr.k==='wake'){
+      h += `<div class="ladder">${LADDER.map((s,i)=>`<button class="step ${d.wake[i]?'on':''}" data-ladder="${i}"><i>${d.wake[i]?'✓':i+1}</i>${s}</button>`).join('')}</div>`;
+    } else if(timer && timer.k===tr.k){
+      h += `<div class="timer" id="timerTxt">--:--</div><div class="btns"><button class="b" data-stop="1">Stop (counts as tiny)</button></div>`;
+    } else {
+      h += `<div class="btns">
+        <button class="b solid" data-start="${tr.k}">Start ${tr.mins}-min block</button>
+        <button class="b ${lv===2?'on':''}" data-set="${tr.k}" data-v="2">Did full</button>
+        <button class="b ${lv===1?'on':''}" data-set="${tr.k}" data-v="1">Did 2-min</button></div>
+        <p class="sub">${tr.tiny}</p>`;
+    }
+    h += `</section>`;
+  }
+  h += `<section class="card" style="--c:var(--gold)"><p class="lbl">Tonight: 1% better tomorrow</p>
+    <p class="sub">One line. What went wrong today, and what will you do 1% better?</p>
+    <textarea id="note" placeholder="e.g. Slept late, so phone goes across the room at 10pm">${esc(d.note)}</textarea></section>`;
+  return h;
+}
+
+function vChain(){
+  const t = today();
+  const shades = ['var(--panel2)','#5B2A4A','#A3315B','#E2405E','var(--gold)'];
+  let h = `<section class="card" style="--c:var(--gold)"><p class="lbl">Oct 10 – Dec 31 · 83 days</p><div class="grid"><span></span>${['S','S','M','T','W','T','F'].map(x=>`<span>${x}</span>`).join('')}`;
+  for(let w=0; w<12; w++){
+    h += `<span>W${w+1}</span>`;
+    for(let i=0;i<7;i++){
+      const s = addDays(START, w*7+i);
+      if(dayIdx(s) > dayIdx(END)){ h += `<span></span>`; continue; }
+      const fut = dayIdx(s) > dayIdx(t);
+      h += `<span class="c ${fut?'fut':''} ${s===t?'today':''}" title="${s}" style="${fut?'':`background:${shades[doneCount(s)]}`}"></span>`;
+    }
+  }
+  h += `</div><div class="legend">0 ${shades.map(c=>`<span class="c" style="background:${c}"></span>`).join('')} 4 tracks</div></section><div class="stats">`;
+  for(const tr of TRACKS){
+    let tot = 0; for(let i=0;i<=Math.min(dayIdx(t),dayIdx(END));i++) if(level(addDays(START,i),tr.k)) tot++;
+    h += `<div class="stat" style="--c:${tr.c}"><b>${streak(tr.k)}</b><span>${tr.name} chain · ${tot} days total</span></div>`;
+  }
+  return h + `</div><div class="tip" style="--c:var(--gold)"><b>The rule:</b> one missed day keeps your chain alive. Two in a row breaks it.</div>`;
+}
+
+function vPlan(){
+  const cw = weekOf(today());
+  let h = '';
+  for(let w=1; w<=12; w++){
+    const from = addDays(START,(w-1)*7), to = w===12 ? END : addDays(START, w*7-1);
+    const f = d => new Date(d+'T12:00:00').toLocaleDateString(undefined,{day:'numeric', month:'short'});
+    h += `<section class="wk ${w===cw?'now':''}"><h3>Week ${w}${w===cw?' · now':''} <span class="sub" style="font-family:var(--body)">${f(from)} – ${f(to)}</span></h3>
+      ${TRACKS.map(tr=>`<p style="--c:${tr.c}"><i></i><span>${esc(FOCUS[tr.k][w-1])}</span></p>`).join('')}</section>`;
+  }
+  return h;
+}
+
+function vReview(){
+  const t = today(); let h = '<div class="stats">';
+  const last7 = [...Array(7)].map((_,i)=>addDays(t,-i)).filter(s=>dayIdx(s)>=0);
+  const tips = [];
+  for(const tr of TRACKS){
+    const full = last7.filter(s=>level(s,tr.k)===2).length, any = last7.filter(s=>level(s,tr.k)>0).length;
+    h += `<div class="stat" style="--c:${tr.c}"><b>${any}/7</b><span>${tr.name} · ${full} full</span></div>`;
+    if(last7.length>=7 && full>=6) tips.push([tr, 'Ready to grow. Move to next week\'s step, a little bigger.']);
+    else if(last7.length>=7 && any<=3) tips.push([tr, 'Too big right now. Shrink it: do only the 2-minute version this week.']);
+  }
+  h += '</div>';
+  h += tips.length ? tips.map(([tr,m])=>`<div class="tip" style="--c:${tr.c}"><b>${tr.name}:</b> ${m}</div>`).join('')
+    : `<div class="tip" style="--c:var(--gold)"><b>Sunday check:</b> after 7 days this screen tells you which track to grow and which to shrink.</div>`;
+  const notes = Object.entries(S.days).filter(([,d])=>d.note).sort((a,b)=>b[0].localeCompare(a[0])).slice(0,10);
+  h += `<section class="card notes" style="--c:var(--gold)"><p class="lbl">Your 1% notes</p>${notes.length ? notes.map(([s,d])=>`<p><span>${s}</span>${esc(d.note)}</p>`).join('') : '<p class="sub">Your nightly lines show up here.</p>'}</section>`;
+  h += `<section class="card" style="--c:var(--web)"><p class="lbl">Backup</p><p class="sub">Your progress lives on this phone. Save a backup file every Sunday.</p><div class="btns"><button class="b solid" data-backup="1">Save backup</button><button class="b" data-restore="1">Restore</button></div><input type="file" id="restoreFile" accept=".json,application/json" hidden></section>`;
+  return h;
+}
+
+function render(){
+  header();
+  const v = document.getElementById('view');
+  const ta = document.activeElement && document.activeElement.id === 'note';
+  if(ta) return;
+  v.replaceChildren(el({today:vToday, chain:vChain, plan:vPlan, review:vReview}[tab]()));
+  if(timer) paintTimer();
+}
+
+function paintTimer(){
+  const left = Math.max(0, timer.end - Date.now());
+  const n = document.getElementById('timerTxt');
+  if(n) n.textContent = `${String(Math.floor(left/60000)).padStart(2,'0')}:${String(Math.floor(left/1000)%60).padStart(2,'0')}`;
+  if(left===0){ day(today())[timer.k] = 2; timer = null; clearInterval(tick); try{localStorage.removeItem('kaizen-timer')}catch(e){} save(); render(); }
+}
+function startTimer(k, end){
+  timer = {k, end}; try{ localStorage.setItem('kaizen-timer', JSON.stringify(timer)); }catch(e){}
+  clearInterval(tick); tick = setInterval(paintTimer, 1000); render();
+}
+
+document.addEventListener('click', e => {
+  const b = e.target.closest('button'); if(!b) return;
+  const d = day(today());
+  if(b.dataset.t){ tab = b.dataset.t; document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('on', x===b)); render(); scrollTo(0,0); return; }
+  if(b.dataset.ladder){ const i = +b.dataset.ladder; d.wake[i] = !d.wake[i]; if(d.wake[i]) for(let j=0;j<i;j++) d.wake[j] = true; save(); render(); return; }
+  if(b.dataset.set){ const k = b.dataset.set, v = +b.dataset.v; d[k] = d[k]===v ? 0 : v; save(); render(); return; }
+  if(b.dataset.start){ const tr = TRACKS.find(x=>x.k===b.dataset.start); startTimer(tr.k, Date.now()+tr.mins*60000); return; }
+  if(b.dataset.backup){ const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify(S)],{type:'application/json'})); a.download='kaizen-backup-'+today()+'.json'; a.click(); return; }
+  if(b.dataset.restore){ document.getElementById('restoreFile').click(); return; }
+  if(b.dataset.stop){ if(d[timer.k] < 1) d[timer.k] = 1; timer = null; clearInterval(tick); try{localStorage.removeItem('kaizen-timer')}catch(e){} save(); render(); }
+});
+document.addEventListener('input', e => { if(e.target.id==='note'){ day(today()).note = e.target.value; save(); } });
+document.addEventListener('change', e => { if(e.target.id==='restoreFile' && e.target.files[0]){ e.target.files[0].text().then(t=>{ try{ const v=JSON.parse(t); if(v.days){ S=v; save(); render(); setSave('Backup restored'); } }catch(err){ setSave('That file is not a Kaizen backup'); } }); } });
+document.addEventListener('focusout', e => { if(e.target.id==='note') header(); });
+
+loadLocal();
+try{ const tm = JSON.parse(localStorage.getItem('kaizen-timer')||'null'); if(tm) startTimer(tm.k, tm.end); }catch(e){}
+render();
+connect();
+if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
+setInterval(()=>{ if(!timer) header(); }, 60000);
+</script>
+</body></html>
